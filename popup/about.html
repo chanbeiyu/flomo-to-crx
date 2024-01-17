@@ -1,0 +1,65 @@
+<html lang="zh_CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memos Plus</title>
+
+    <link rel="stylesheet" type="text/css" href="/styles/popup.css">
+</head>
+
+<body style="text-align: center;">
+    <div class="page">
+        <div id="back" class="title nav"></div>
+        <div>
+            <h1>什么是授权？</h1>
+            授权是授予对用户 Notion 数据的集成访问权限的过程。该过程取决于集成是公共集成还是内部集成。因【公共集成】需要企业权限，目前本扩展主要使用【内部集成】方式授权。
+            
+            <h1>flomo 浮墨设置</h1>
+            拷贝flomo 浮墨中【你的专属记录 API】到插件配置中即可。<br />
+            - 创建闪念需要 flomo Pro 会员<br />
+            - 导入 flomo 数据到 Notion 不需要 flomo Pro 会员<br />
+
+            <h1>Notion 内部集成身份验证流程设置</h1>
+            要使用内部集成，请首先在集成的设置页面中创建集成。默认情况下，所有集成都以内部方式启动。内部集成将与您选择的工作区相关联。您必须是工作区所有者才能创建集成。
+            创建步骤如下，也可参考 <a href="https://developers.notion.com/docs/authorization">Notion 官方文档</a> 设置
+            
+            <h2>1.Basic Information 配置</h2>
+            <a href="https://www.notion.so/my-integrations" target="_blank">点我去创建内部集成</a>（需要登录 Notion 账号）<p/>
+            Associated workspace: 选择数据要保存的 Workspace，后面 database 页面需要创建在该 Workspace 下。<br/>
+            Name: 建议填写 Memos（非必须，可自由填写）<br />
+            Logo: 可自选图片上传<br />
+            设置好后提交保存。<p />
+            <img src="/images/integrations-1.png" alt="" /><p />
+            <img src="/images/integrations-0.png" alt="" />
+            
+            <h2>2.Secrets 配置</h2>
+            创建集成后，可以根据需要在“功能”选项卡下更新其设置，并在“Secret”下查看集成令牌。集成令牌将用于对 REST API 请求进行身份验证。集成在每个 API 请求中发送相同的令牌。<p />
+            <img src="/images/integrations-3.png" alt="" /><p />
+            复制 Internal Integration Secret 到插件设置中的 Notion Internal Integration Secret 中。<p />
+            <img src="/images/integrations-2.png" alt="" />
+            
+            <h2>3.设置集成权限</h2>
+            勾选【Read content】、【Update content】、【Insert content】，其它功能不涉及，可自由勾选，设置好后保存。<p />
+            <img src="/images/integrations-4.png" alt="" />
+
+            <h2>4.创建 database</h2>
+            在 Notion 中创建一个 database 页面作为数据存储区。并复制该 databse 的 id 到插件设置中的 Notion database id 中。<br/>
+            database id 可以通过 url 获取（使用 Notion 客户端时可以通过 copy 页面链接后查看）。<br />
+            url 组成一般为 https://www.notion.so/{workspace}/{databaseId}?v={pageVersion}。其中 {databaseId} 即为 database id。<br />
+            如 url 为 <i>https://www.notion.so/beiyu-sence/dfb7d7bd4e1444c893d89351b1346fb5?v=0fd6557cd1c14a9589091e70ff792c78</i>，则 dfb7d7bd4e1444c893d89351b1346fb5 即为 database id。<p />
+            
+            <h2>5.授权 database</h2>
+            在集成可以与您的 Notion 工作区页面交互之前，必须手动与集成共享该页面。
+            要共享具有集成的页面，请访问 Notion 工作区中的页面，单击页面右上角的 ••• 菜单，向下滚动到【Add connections】，然后使用搜索栏从下拉列表中查找并选择第一步创建的集成。<p/>
+            <img src="/images/integrations-5.png" alt="" /><p />
+            然后在弹出确认窗口中点击【Confirm】确认即可。至此 Notion 设置完毕。<p />
+            <img src="/images/integrations-6.png" alt="" /><p />
+            
+        </div>
+    </div>
+    <script src="/lib/jquery-3.7.1.js"></script>
+    <script src="/scripts/popup.js"></script>
+</body>
+
+</html>
+ 

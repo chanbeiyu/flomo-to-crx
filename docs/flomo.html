@@ -1,0 +1,536 @@
+
+        <html>
+            <head>
+                <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+                <title>flomo · 浮墨笔记</title>
+                <style type="text/css">
+                  * {
+                    margin: 0;
+                    padding: 0;
+                  }
+                  body {
+                    background: #fafafa;
+                  }
+
+                  header .logo {
+                    text-align: center;
+                    border-bottom: 1px solid #efefef;
+                  }
+
+                  header .top {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                  }
+                  header .logo,
+                  header .top .user {
+                    padding: 40px 0;
+                  }
+                  header .top .user .name {
+                    color: #454545;
+                    font-size: 16px;
+                  }
+                  header .top .user .date {
+                    font-size: 12px;
+                    color: #9d9d9d;
+                  }
+
+                  header .top .filter {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                  }
+                  header .top .filter button {
+                    padding: 9px 10px;
+                    background: #30cf79;
+                    border-radius: 3px;
+                    color: #fff;
+                    font-size: 14px;
+                    border: none;
+                    cursor: pointer;
+                  }
+                  header,
+                  .memos {
+                    width: 600px;
+                    margin: 0 auto;
+                  }
+                  .memos h1 {
+                    margin-top: 30px;
+                  }
+                  .memo {
+                    margin: 20px 0;
+                    background: #fff;
+                    padding: 20px;
+                    border-radius: 6px;
+                    word-wrap: break-word;
+                  }
+                  .memo:hover {
+                    box-shadow: 0px 2px 10px #dddddd;
+                  }
+                  .memo .time {
+                    color: #8d8d8d;
+                    font-size: 12px;
+                  }
+                  .memo .content {
+                    color: #323232;
+                    font-size: 14px;
+                  }
+                  .memo .content p {
+                    line-height: 1.8;
+                    min-height: 20px;
+                    margin: 0;
+                  }
+                  .memo .content ul,
+                  .memo .content ol {
+                    padding-inline-start: 22px;
+                    margin: 0;
+                  }
+                  .memo .content li {
+                    line-height: 1.8;
+                  }
+                  .memo .files img {
+                    width: 100%;
+                    border: 1px solid #e6e6e6;
+                    border-radius: 4px;
+                    margin: 6px 0;
+                  }
+                </style>
+                <style>
+                .custom-select {
+                  position: relative;
+                  font-size: 14px;
+                  color: #9d9d9d;
+                  background: #efefef;
+                  border-radius: 3px;
+                  border: none;
+                  margin-right: 10px;
+                }
+
+                .custom-select select {
+                  display: none;
+                }
+
+                .select-selected {
+                  /* background-color: DodgerBlue; */
+                  background: #efefef;
+                  color: #9d9d9d;
+                }
+
+                .select-selected:after {
+                  position: absolute;
+                  content: "";
+                  top: 14px;
+                  right: 10px;
+                  width: 0;
+                  height: 0;
+                  border: 6px solid transparent;
+                  border-color: #7d7d7d transparent transparent transparent;
+                }
+
+                .select-selected.select-arrow-active:after {
+                  border-color: transparent transparent #7d7d7d transparent;
+                  top: 7px;
+                }
+
+                .select-items div,
+                .select-selected {
+                  color: rgba(157, 157, 157, 1);
+                  padding: 9px 12px;
+                  font-size: 14px;
+                  color: #9d9d9d;
+                  border: none;
+                  cursor: pointer;
+                  border-radius: 3px;
+                  border: none;
+                  width: 120px;
+                  user-select: none;
+                }
+
+                .select-items {
+                  position: absolute;
+                  background-color: white;
+                  top: 100%;
+                  left: 0;
+                  right: 0;
+                  z-index: 99;
+                  max-height: 200px;
+                  overflow-y: auto;
+                  overflow-x: hidden;
+                  box-shadow: 0px 4px 2px #dddddd;
+                }
+
+                .select-items::-webkit-scrollbar {
+                  width: 5px;
+                }
+
+                .select-items::-webkit-scrollbar-track {
+                  background: #f1f1f1;
+                }
+
+                .select-items::-webkit-scrollbar-thumb {
+                  background: #888;
+                }
+
+                .select-hide {
+                  display: none;
+                }
+
+                .select-items div:hover,
+                .same-as-selected {
+                  background-color: rgba(0, 0, 0, 0.1);
+                }
+              </style>
+            </head>
+            <body>
+              <header>
+                <div class="logo">
+                  <svg width="96" height="31" viewBox="0 0 96 31" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M4.87056 9.11086C4.87056 6.25522 5.89594 4.89539 7.81854 4.89539H12.5609V0H7.81854C2.69163 0 0 3.39957 0 9.11086V10.8786V14.9581V30.3242H4.87056V15.3661H12.5609V10.8786H4.87056V9.11086ZM79.5937 27.8765C81.3881 29.7803 83.6952 30.7321 86.3868 30.7321C89.0785 30.7321 91.2574 29.7803 93.18 27.8765C95.1026 25.9727 95.9998 23.525 95.9998 20.5334C95.9998 17.5418 94.9744 15.0941 93.18 13.1903C91.2574 11.2866 89.0785 10.3347 86.3868 10.3347C83.6952 10.3347 81.5163 11.2866 79.5937 13.1903C77.6711 15.0941 76.7739 17.5418 76.7739 20.5334C76.7739 23.525 77.7993 25.9727 79.5937 27.8765ZM81.6444 20.5334C81.6444 17.5418 83.6952 15.502 86.3868 15.502C89.0785 15.502 91.2574 17.5418 91.1292 20.5334C91.1292 23.661 89.0785 25.7008 86.3868 25.7008C83.6952 25.7008 81.6444 23.661 81.6444 20.5334ZM32.8147 30.7321C30.1231 30.7321 27.816 29.7802 26.0215 27.8765C24.2271 25.9727 23.2017 23.661 23.2017 20.6694C23.2017 17.6777 24.0989 15.23 26.0215 13.3263C27.9441 11.4225 30.1231 10.4706 32.8147 10.4706C35.5063 10.4706 37.6853 11.4225 39.6079 13.3263C41.5305 15.23 42.4277 17.6777 42.4277 20.6694C42.4277 23.661 41.5305 26.1087 39.6079 28.0124C37.6853 29.9162 35.5063 30.7321 32.8147 30.7321ZM32.8147 15.502C30.1231 15.502 28.0723 17.5418 28.0723 20.5334C28.0723 23.661 30.1231 25.7007 32.8147 25.7007C35.5063 25.7007 37.5571 23.661 37.5571 20.5334C37.5571 17.5418 35.5063 15.502 32.8147 15.502ZM62.0358 19.9894V30.4601H57.2934V19.7175C57.2934 17.1338 55.8835 15.502 53.9609 15.502C51.7819 15.502 50.1157 16.8618 50.1157 19.9894V30.4601H45.3733V10.8786H50.1157V13.7342C51.0129 11.5585 53.32 10.4706 55.3708 10.4706C58.3187 10.6066 60.2413 11.8305 61.2667 14.1422C62.5484 11.6945 64.471 10.4706 67.0345 10.4706C71.5205 10.4706 74.084 13.5982 74.084 19.3095V30.4601H69.3416V19.8535C69.3416 17.1338 67.9317 15.502 65.8809 15.502C63.5738 15.502 62.0358 17.1338 62.0358 19.9894ZM15.6366 4.89539V0H20.379V30.4602H15.6366V7.2071V4.89539Z" fill="#202020"/>
+                  </svg>
+                </div>
+                <div class="top">
+                  <div class="user">
+                    <div class="name">@北鱼</div>
+                    <div class="date">于 2024-1-12 导出 49 条 MEMO</div>
+                  </div>
+                  <div class="filter">
+                    <div class='custom-select'>
+                        <select name="date" id="date">
+                          <option value="">选择年月</option>
+                          <option value="2024-01">2024-01</option>
+                        </select>
+                    </div>
+                    <div class='custom-select'>
+                      <select name="tag" id="tag">
+                        <option value="">选择标签</option>
+                        <option value="句子">句子</option><option value="Areas">Areas</option><option value="Areas/游戏">Areas/游戏</option><option value="Areas/游戏/地下城">Areas/游戏/地下城</option><option value="Areas/游戏/电子游戏和传统游戏">Areas/游戏/电子游戏和传统游戏</option><option value="Areas/游戏/好游戏的特性">Areas/游戏/好游戏的特性</option><option value="Areas/游戏/记步和记时游戏">Areas/游戏/记步和记时游戏</option><option value="Areas/游戏/空间机制">Areas/游戏/空间机制</option><option value="Areas/游戏/空间机制/墙">Areas/游戏/空间机制/墙</option><option value="Areas/游戏/空间机制/箱庭理论">Areas/游戏/空间机制/箱庭理论</option><option value="Areas/游戏/三消游戏">Areas/游戏/三消游戏</option><option value="Areas/游戏/游戏机制|Game">Areas/游戏/游戏机制|Game</option><option value="Areas/游戏/游戏循环">Areas/游戏/游戏循环</option><option value="Areas/游戏/MOBA游戏">Areas/游戏/MOBA游戏</option><option value="Areas/Tools">Areas/Tools</option><option value="Areas/Tools/GTD">Areas/Tools/GTD</option><option value="Areas/Wisdom">Areas/Wisdom</option><option value="Chen’sThoughts">Chen’sThoughts</option><option value="Examples">Examples</option><option value="Inbox">Inbox</option><option value="Models">Models</option><option value="Models/蔡格尼克效应">Models/蔡格尼克效应</option><option value="Models/德雷福斯的模型|技能获得模型">Models/德雷福斯的模型|技能获得模型</option><option value="Models/帕金森定律">Models/帕金森定律</option><option value="Models/曝光效应">Models/曝光效应</option><option value="Models/确认偏差|自我偏差">Models/确认偏差|自我偏差</option><option value="Models/特征存在效应">Models/特征存在效应</option><option value="Models/乌卡时代|VUCA">Models/乌卡时代|VUCA</option><option value="Models/主动抑制">Models/主动抑制</option><option value="Persons">Persons</option><option value="Persons/戴维·艾伦">Persons/戴维·艾伦</option><option value="Persons/弗里德里希·威廉·尼采">Persons/弗里德里希·威廉·尼采</option><option value="Persons/尼克拉斯·卢曼">Persons/尼克拉斯·卢曼</option><option value="Persons/尼克拉斯·卢曼/Introduce">Persons/尼克拉斯·卢曼/Introduce</option><option value="Persons/伊曼努尔·康德">Persons/伊曼努尔·康德</option><option value="ReadNotes">ReadNotes</option><option value="ReadNotes/卡片笔记写作法">ReadNotes/卡片笔记写作法</option><option value="ReadNotes/卡片笔记写作法/Extends">ReadNotes/卡片笔记写作法/Extends</option><option value="ReadNotes/游戏为什么好玩">ReadNotes/游戏为什么好玩</option><option value="Relation">Relation</option><option value="Relation/简单与复杂">Relation/简单与复杂</option><option value="Relation/说与写">Relation/说与写</option><option value="Relation/学习与理解">Relation/学习与理解</option><option value="Relation/遗忘与记忆">Relation/遗忘与记忆</option><option value="Symbol">Symbol</option><option value="Symbol/成熟">Symbol/成熟</option><option value="Symbol/创造力">Symbol/创造力</option><option value="Symbol/存储强度">Symbol/存储强度</option><option value="Symbol/记忆">Symbol/记忆</option><option value="Symbol/决策">Symbol/决策</option><option value="Symbol/科学性思考">Symbol/科学性思考</option><option value="Symbol/理智">Symbol/理智</option><option value="Symbol/批判性思考">Symbol/批判性思考</option><option value="Symbol/提取强度">Symbol/提取强度</option><option value="Symbol/学习动机">Symbol/学习动机</option><option value="Symbol/遗忘">Symbol/遗忘</option><option value="Symbol/意志力">Symbol/意志力</option><option value="Symbol/阅读">Symbol/阅读</option><option value="Symbol/直觉">Symbol/直觉</option><option value="Symbol/重复阅读">Symbol/重复阅读</option>
+                      </select>
+                    </div>
+                    <button>筛选</button>
+                  </div>
+                </div>
+              </header>
+              <div class="memos">
+                  
+        <div class="memo">
+            <div class="time">2024-01-12 14:21:35</div>
+            <div class="content"><p>#ReadNotes/游戏为什么好玩 #Areas/游戏/空间机制/箱庭理论 </p><p>箱庭游戏有三个明显的特点</p><ol><li><p>基础元素的重复使用。比如《塞尔达传说》里道路、墙壁、河流等基础元素是被反复使用的。</p></li><li><p>鲜明的视觉落差。在游戏里，你每变换一个场景，就会发现美术风格有了巨大的变化，这种视觉落差丰富了玩家的游戏体验。</p></li><li><p>用通路连接不同的关卡。很多日本老派游戏人至今还用箱庭指代关卡，所以一些地方关于箱庭理论的描述着重强调的就是“关卡—通路—关卡”的三段式结构。</p></li></ol><p>典型的“锁—钥匙—锁”的三段式结构</p><p>变成了一个四段式结构：遇到障碍物—获取道具和技能—通过障碍物—拓展更大的地图。</p><p>在开放世界里，箱庭和四段式的开锁设计也可以用来做任务引导。</p></div>
+            <div class="files"></div>
+        </div>
+    
+        <div class="memo">
+            <div class="time">2024-01-12 14:16:11</div>
+            <div class="content"><p>#ReadNotes/游戏为什么好玩 #Areas/游戏/空间机制/墙 </p><p>山川、海洋、沙漠这些在游戏里经常被设置为不可逾越的障碍，这些障碍本质上也都是看得见的墙。</p></div>
+            <div class="files"></div>
+        </div>
+    
+        <div class="memo">
+            <div class="time">2024-01-12 14:15:09</div>
+            <div class="content"><p>#ReadNotes/游戏为什么好玩 </p><p>玩家在 #Areas/游戏/地下城 或者地图上遇到的那些敌人，并不一定是让玩家去战斗，而只是通过压缩玩家的活动 #Areas/游戏/空间机制 ，驱使玩家被动前进。这增加了玩家的紧张感，也起到了情绪渲染的作用。</p></div>
+            <div class="files"></div>
+        </div>
+    
+        <div class="memo">
+            <div class="time">2024-01-12 14:11:04</div>
+            <div class="content"><p>#ReadNotes/游戏为什么好玩 </p><p>#Areas/游戏/地下城<strong> </strong>的存在主要有四个原因</p><ol><li><p>RPG的核心是故事性和人物塑造，而这两点很难填充起游戏时长</p></li><li><p>一款RPG想要成功，很重要的一点就是让玩家对于主角有代入感，代入感最好的设计是让玩家和主角有共同成长的体验</p></li><li><p>玩家需要在游戏里找到成就感，其中成就感最重要的来源就是“我战胜了敌人”和“我完成了挑战”</p></li><li><p>地下城本身是可以作为故事线索存在的</p></li></ol><p>#Areas/游戏/地下城 的缺点</p><ul><li><p>地下城是一个很容易让人产生疲劳感的设计。地下城本质上是一个以极强的目的性为前提而设计出的机制</p></li><li><p>地下城很容易脱离游戏剧情本身，让玩家有“出戏”的感觉</p></li></ul><p>#Areas/游戏/地下城 设计上遵循三个原则</p><ol><li><p>地下城的难度不能太高，或者说迷宫难度和敌人难度不能同时高</p></li><li><p>地下城本身不能完全脱离故事，或者不能脱离游戏的某个核心机制</p></li><li><p>主线相关的单一地下城不能太过漫长</p></li></ol></div>
+            <div class="files"></div>
+        </div>
+    
+        <div class="memo">
+            <div class="time">2024-01-12 14:05:06</div>
+            <div class="content"><p>#ReadNotes/游戏为什么好玩 </p><p>#Areas/游戏/MOBA游戏 的地图设计也应用了大量的空间机制。最为典型的一点就是，标准的MOBA类游戏地图的中间点都是一个十字路口，而十字路口的设计除了增加通路数量，丰富战术以外，在现实世界里，十字路口还代表了无序和冲突，这种对场景的暗示也会被带入游戏当中。</p><p>MOBA类游戏另外一个很经典的 #Areas/游戏/空间机制 就是不可见空间的范围。游戏内有两种不可见范围：一种是草丛，另一种是战争迷雾</p></div>
+            <div class="files"></div>
+        </div>
+    
+        <div class="memo">
+            <div class="time">2024-01-12 14:01:55</div>
+            <div class="content"><p>#ReadNotes/游戏为什么好玩 #Areas/游戏/记步和记时游戏</p><p>#Areas/游戏/三消游戏 在发展过程中出现了两个明显的分支。一是计步玩法，玩家在有限的步数内完成消除；二是计时玩法，玩家在有限的时间内尽可能多地消除。</p><p>计步玩法更接近一款策略游戏，而计时玩法是一款比反应力的动作游戏。从结果来说，绝大多数普通玩家对反应类游戏的兴趣更大，而越接近策略游戏的机制，会让游戏越偏向核心玩家的口味。</p></div>
+            <div class="files"></div>
+        </div>
+    
+        <div class="memo">
+            <div class="time">2024-01-12 13:59:43</div>
+            <div class="content"><p>#ReadNotes/游戏为什么好玩 #Areas/游戏/好游戏的特性</p><p>好玩的游戏一定不是只有单一的机制和单一的游戏性体现，而是需要一系列相关机制合适地组合在一起。</p><p>好的游戏都是用简单的规则衍生出复杂的机制的。</p><p>成就会消失，而错误会积累。</p><p>低敏感度的操作提供正反馈，高敏感度的操作提供负反馈。</p><p>好的游戏应该让玩家尽可能体会到游戏的乐趣，而不应该为了过度强调真实性，而带入现实世界中那些糟糕的体验。</p></div>
+            <div class="files"></div>
+        </div>
+    
+        <div class="memo">
+            <div class="time">2024-01-12 13:58:44</div>
+            <div class="content"><p>#ReadNotes/游戏为什么好玩 #Areas/游戏/电子游戏和传统游戏 最本质的区别是电子游戏可以创造相对客观的随机性，而传统游戏的随机性主要靠对手创造。</p></div>
+            <div class="files"></div>
+        </div>
+    
+        <div class="memo">
+            <div class="time">2024-01-12 13:56:55</div>
+            <div class="content"><p>#ReadNotes/游戏为什么好玩 #Areas/游戏/空间机制 就一直是最重要的机制，甚至可以说空间机制是游戏的原点。玩家争夺空间的所有权，就是一种游戏玩法。</p><p>空间机制游戏最主要的乐趣在于空间的有限性，当空间全部被消耗就意味着游戏结束（胜利或者失败），这是所有这类游戏的基础规则。</p></div>
+            <div class="files"></div>
+        </div>
+    
+        <div class="memo">
+            <div class="time">2024-01-12 13:51:16</div>
+            <div class="content"><p>#ReadNotes/游戏为什么好玩 #Areas/游戏/游戏循环 ，包括学习、尝试、应用、精通四个步骤</p></div>
+            <div class="files"></div>
+        </div>
+    
+        <div class="memo">
+            <div class="time">2024-01-12 13:51:02</div>
+            <div class="content"><p>#ReadNotes/游戏为什么好玩 #Areas/游戏/游戏机制|Game Mechanics 。到底什么是游戏机制？ 机制和规则(Rules)到底有什么区别？</p><p>规则是清晰的、宏观的，而机制是隐藏的、精密的。</p><p>开发者需要让玩家理解的是游戏规则，而游戏机制需要玩家在游戏过程里一点一点地发掘。站在这个角度来说，游戏一开始需要理解的规则越简单越好，而游戏机制需要在整个游戏过程里尽可能给玩家带来更多的乐趣。</p><p> #Relation /游戏机制和规则</p></div>
+            <div class="files"></div>
+        </div>
+    
+        <div class="memo">
+            <div class="time">2024-01-11 23:44:15</div>
+            <div class="content"><p>#Inbox</p></div>
+            <div class="files"></div>
+        </div>
+    
+        <div class="memo">
+            <div class="time">2024-01-11 23:11:04</div>
+            <div class="content"><p>#ReadNotes/卡片笔记写作法 根据著名的 #Models/帕金森定律 ，工作时预留再多的时间都不会有剩余，就像空气会充满房间的每一个角落一样。这一定律适用于那些需要较长时间去完成的任务，而不适用于那些可以一次性完成的任务。</p><p>这也是由于前面提到的 #Models/蔡格尼克效应 的存在。</p><p> https://v.flomoapp.com/mine/?memo_id=OTkzNTAyNTM </p></div>
+            <div class="files"></div>
+        </div>
+    
+        <div class="memo">
+            <div class="time">2024-01-11 23:00:32</div>
+            <div class="content"><p>#ReadNotes/卡片笔记写作法 我们越能控制自己的工作，引导我们的工作向着我们认为有趣的、相关的方向发展，就越不需要调用 #Symbol/意志力 去强迫自己完成这件事情。只有这样，工作本身才能成为动力的源泉，这对工作的可持续发展至关重要。</p></div>
+            <div class="files"></div>
+        </div>
+    
+        <div class="memo">
+            <div class="time">2024-01-11 22:57:53</div>
+            <div class="content"><p>#ReadNotes/卡片笔记写作法 #Symbol/学习动机 是优秀学生最重要的指标之一，仅次于他们掌控自己学习过程的感觉。</p><p>如果我们被一个看似不值得做的项目困住，会非常沮丧；而看到我们认同的项目在推进，则会让我们备受鼓舞。</p><p>因此，在工作的每一步，我们都可以问自己：“这件事有什么有趣的地方？”或在阅读时常常问自己：“与这件事相关的事情中，哪些值得我们记录下来？”那么，除了根据兴趣挑选信息，我们还可以对工作中遇到的问题进行详细阐释，发掘出我们以前不知道的方面，从而延伸自己的兴趣。</p><p> https://v.flomoapp.com/mine/?memo_id=OTk0MTExODY </p></div>
+            <div class="files"></div>
+        </div>
+    
+        <div class="memo">
+            <div class="time">2024-01-11 22:22:37</div>
+            <div class="content"><p>#ReadNotes/卡片笔记写作法 “有 #Symbol/创造力 的人更善于认识关系、建立联系和联想，并以一种独创的方式看待事物——看到别人看不到的东西。”</p><p>#Chen’sThoughts 关系、联系和联想，关系到发散思维和收敛思维，在此之上才能产生创新思维。</p></div>
+            <div class="files"></div>
+        </div>
+    
+        <div class="memo">
+            <div class="time">2024-01-11 22:13:02</div>
+            <div class="content"><p>#ReadNotes/卡片笔记写作法 #Symbol/直觉 并不是理性和知识的对立面，而是我们脑力活动的整合和实践的一面，是我们建立有意识的、外显的知识所依据的经验沉淀。</p><p>#Chen’sThoughts INFJ对人情绪的直觉来白于平日对人的观察，如来把大量的时间用于其它专业，应设可以产生同样的直觉</p></div>
+            <div class="files"></div>
+        </div>
+    
+        <div class="memo">
+            <div class="time">2024-01-11 22:03:17</div>
+            <div class="content"><p>#ReadNotes/卡片笔记写作法 #Models/特征存在效应 (the feature positive effect)。这种现象是指，我们倾向于高估（在心理上）容易获得的信息的重要性，并使我们的思维向最近获得的事实倾斜，而不一定是最相关的事实。</p></div>
+            <div class="files"></div>
+        </div>
+    
+        <div class="memo">
+            <div class="time">2024-01-11 22:00:17</div>
+            <div class="content"><p>#ReadNotes/卡片笔记写作法 艾伯特·罗腾伯格(Albert Rothenberg)提出，构建对立面是产生新思想最可靠的方式</p></div>
+            <div class="files"></div>
+        </div>
+    
+        <div class="memo">
+            <div class="time">2024-01-11 17:06:44</div>
+            <div class="content"><p>#ReadNotes/卡片笔记写作法 #Relation/遗忘与记忆 </p><p>#Symbol/遗忘 并不是 #Symbol/记忆 的丧失，而是在我们的自主意识与长期记忆之间竖起了一道思维屏风，心理学家称这种机制为 #Models/主动抑制 。</p><p>如果没有一个非常彻底的过滤器，我们的大脑会不断地被记忆所淹没，也就无法把注意力集中在周围的事情上了。</p><p>来自加州大学的罗伯特(Robert)和伊丽莎白·利根·比约克(Elizabeth Ligon Bjork)建议，在记忆方面，要区分两种不同的测量方法：#Symbol/存储强度 和 #Symbol/提取强度 。他们推测，因为我们把越来越多的信息添加到长期记忆里， 存储强度 ，即存储记忆的能力，在我们的一生中只会变得越来越强。</p></div>
+            <div class="files"></div>
+        </div>
+    
+        <div class="memo">
+            <div class="time">2024-01-11 16:52:53</div>
+            <div class="content"><p>#ReadNotes/卡片笔记写作法 罗卡提到的心理学家杰罗姆·布鲁纳(Jerome Bruner)更进一步说，如果我们不能设法超越给定的语境进行思考，而只关注给我们的信息，那么显然是不可能进行 #Symbol/科学性思考 的</p></div>
+            <div class="files"></div>
+        </div>
+    
+        <div class="memo">
+            <div class="time">2024-01-11 16:44:18</div>
+            <div class="content"><p>#ReadNotes/卡片笔记写作法 #Relation/学习与理解 学习就是理解，而且机制也没什么不同：我们只有在过程中不断检验自己，才能改进我们的学习。</p></div>
+            <div class="files"></div>
+        </div>
+    
+        <div class="memo">
+            <div class="time">2024-01-11 16:39:19</div>
+            <div class="content"><p>#ReadNotes/卡片笔记写作法 </p><p>#Relation/说与写</p><p>在口头表达时，我们很容易掩饰毫无根据的主张，还可以用自信的手势来跳过论证的漏洞，或者不顾自己是否知道自己的意思，随口说一句“你知道我的意思”。</p><p>但写在纸上的时候，这些手法过于明显，像“那就是我所说的！”这样的叙述很容易被查证。“写下来”最重要的好处是，当我们对某件事情的理解达不到自己以为能达到的程度时，它能帮助我们正视自己的观点。</p></div>
+            <div class="files"></div>
+        </div>
+    
+        <div class="memo">
+            <div class="time">2024-01-11 16:37:48</div>
+            <div class="content"><p>#ReadNotes/卡片笔记写作法 #Symbol/阅读 ，尤其是 #Symbol/重复阅读 ，很容易使我们误以为自己理解了一篇文章。重复阅读是特别危险的，这是因为存在 #Models/曝光效应 (mere-exposure effect) ：当我们熟悉某事物的时候，会开始相信自己已经理解了，最大的问题是，我们还会对其越发喜欢。</p></div>
+            <div class="files"></div>
+        </div>
+    
+        <div class="memo">
+            <div class="time">2024-01-11 16:34:31</div>
+            <div class="content"><p>#ReadNotes/卡片笔记写作法 辨别模式、质疑所用框架，并发现不同作品间差异的能力，是进行 #Symbol/批判性思考 并审视文本或谈话背后观点的先决条件。</p></div>
+            <div class="files"></div>
+        </div>
+    
+        <div class="memo">
+            <div class="time">2024-01-11 16:29:45</div>
+            <div class="content"><p>#ReadNotes/卡片笔记写作法 </p><p>哲学家 #Persons/伊曼努尔·康德 (Immanuel Kant) 在其关于启蒙运动的名篇中的描述不谋而合：“如果一个人离开他人的引导就无法运用自己的 #Symbol/理智 ，那他就是不 #Symbol/成熟 的。</p></div>
+            <div class="files"></div>
+        </div>
+    
+        <div class="memo">
+            <div class="time">2024-01-11 16:24:37</div>
+            <div class="content"><p>#ReadNotes/卡片笔记写作法 </p><p>#Models/确认偏差|自我偏差 </p><p>每当我遇到与自己的结论相反的已发表的事实、新的观察或思想时，我都会不失时机地立即把它们记下来。因为我根据经验发现，这种事实和思想比我喜欢的那些更容易从记忆中溜走。</p><p><strong>解决确认偏差的问题需要分两步：</strong></p><ol><li><p>首先，把整个写作过程颠倒过来</p></li><li><p>其次，把动机从寻找证实性的事实转变为收集所有相关信息，而不去管它支持什么论点</p></li></ol></div>
+            <div class="files"></div>
+        </div>
+    
+        <div class="memo">
+            <div class="time">2024-01-11 15:46:11</div>
+            <div class="content"><p>#ReadNotes/卡片笔记写作法 我们的大脑除了一次只能专注于一件事的注意力 ，和一次最多只能容纳七件事的短期记忆，第三种有限的资源就是驱动力或 #Symbol/意志力 。对此，工作流程的外界环境设计至关重要。</p><p>#Symbol/意志力 被比作肌肉，是一种消耗得快而恢复得慢的有限资源，通过训练能够在一定程度上得到改善，但需要时间和努力。</p><p>“我们的研究结果表明，一系列广泛的行为都在利用同一种资源，自我的控制、做出负责任的决策和积极的选择，似乎都会干扰此后的同类行为，这意味着自我的某种重要资源会被这种需要消耗意志力的行为耗尽。</p><p>一个可靠的、标准化的工作环境对我们的注意力、专注力和意志力的消耗都比较小。</p><p>#Symbol/决策 是最令人疲惫和厌倦的工作之 </p><p></p><p>https://v.flomoapp.com/mine/?memo_id=OTk0MTExODY </p></div>
+            <div class="files"></div>
+        </div>
+    
+        <div class="memo">
+            <div class="time">2024-01-11 15:39:39</div>
+            <div class="content"><p>#ReadNotes/卡片笔记写作法/Extends </p><p>#Models/蔡格尼克效应 “蔡格尼克效应”的现象，即未完成的任务往往会占据我们的短期记忆，直到它们被完成。</p><p>得益于蔡格尼克的后续研究，我们还知道，其实我们并不一定要完成任务才能说服我们的大脑停止思考它们，我们所要做的就是把想法写下来，让大脑相信它会在之后被妥善处理。至于任务是真的被完成了，还是通过记下笔记而推迟了，大脑并不会区分。通过记录所思所想，可以把想法从脑海中逐渐清除出去，这就是戴维·艾伦的 #Areas/Tools/GTD  系统有效的原因。</p></div>
+            <div class="files"></div>
+        </div>
+    
+        <div class="memo">
+            <div class="time">2024-01-11 15:36:50</div>
+            <div class="content"><p>#ReadNotes/卡片笔记写作法 我们所理解的事物都是有联系的，或是通过规则、理论、描述，或是通过纯逻辑、心理模型或解释。</p></div>
+            <div class="files"></div>
+        </div>
+    
+        <div class="memo">
+            <div class="time">2024-01-11 15:26:14</div>
+            <div class="content"><p>#ReadNotes/卡片笔记写作法/Extends</p><p>#Models/德雷福斯的模型|技能获得模型 德雷福斯模型（Dreyfus model of skill acquisition）初版为5个阶段，后来德雷福斯在 2001 年发表的《远程学习是何种程度上的教育?》一文中又增加了两个阶段，学术界通常把人们提高技能的这七个阶段称之为“技能获得模型”(modelof skill acquisition)。由上而下分成：实践智慧(Practice Wisdom)、驾驭(Mastery)、专长(Expertise)、精通(Proficiency) 、胜任(Competence)、高级初学者(Advanced Beginner)、新手(Novice) 七个等级。</p><p><strong>各等级含意如下：</strong></p><ol><li><p>新手(Novice)阶段。在这个阶段，学习者首先在老师的指导下把目标任务分解为他们在没有相关技能的前提下能够辨认的与语境无关的一些步骤或程序,然后，向学习者提供相应的操作规则这些规则与学习者的关系就像计算机与其程序的关系一样，是一种执行与被执行的关系。这时，学习者只是规则或信息的消费者，只知道根据规则进行操作，但操作起来很笨拙。</p></li><li><p>高级初学者(Advanced Beginner)阶段。当学习者掌握了处理现实情况的某些实际经验，开始对相关语境有了一定的理解时，他们就能够注意目标域中有意义的其他先例。他们在充分观摩了大量的范例之后，学会了辨认新的问题，这时，指导准则就会涉及根据经验可辨别的新的情境因素，也涉及新手可辨别的客观上明确的非情境特征。这时，学习者堂握了一定的技能，获得了处理实际情况的经验和能力，开始根据自己的需要和兴趣关注与任务相关的其他问题，有了初步融入情境的感觉。</p></li><li><p>胜任(Competence)阶段。学习者随着经验的增加，能够辨认和遵守的潜在的相关因素与程序越来越多，通常会感到不知所措，并对学握了相关技能的人产生了发自内心的敬佩感学习者为了从这种信息“超载”上升到能胜任的程度，开始通过接受指导或从经验上设计适合自己的计划或选择某一视角，进行因素的取舍与分类,即确定在具体情境中把哪些因素看成是重要的，哪些因素看成是次要的甚至可忽略不计，从而使自己的理解与决策变得更加容易这时,学习者真正体会到,在获得技能的实践中，真实情境要比开始时教练或老师精确定义的规则或准则复杂许多，没有一个人能为学习者列出所有可能的情境类型。在这一阶段，学习者开始有了较为明确的计划与目标，提高了快速反应能力，降低了任务执行过程中的紧张感，但他们只能独立处理较为简单的问题。</p></li><li><p>精通(Proficiency) 阶段。随着经验的增加，学习者能够完全参与到问题域中，在学习过程中积累的[积极情绪与消极情绪的体验强化了成功的回应，抑制了失败的回应。学习者由伴有直觉回应的情境识别能力取代了由规则和原理表达的操作程序。学习者只有在把实践经验同化到自己的身体当中时，才能发展出一种与理论无关的实践方式。这时,学习者开始体现出直觉思维，但还是以理性思维为主。因此,这个阶段的最大特征是学习者具备了一定的直觉回应能力，即获得了根据语境来辨别问题或情境的能力。</p></li><li><p>专长(Expertise)阶段。当所学的技能变成了学习者的一技之长时,他们就成为专家专家不仅明白需要达到的目标，而且知道如何达到目标,即知道实现目标的具体方式或途径这种更高的辨别力把专家与精通阶段的学习者区分开来。在许多情境中，尽管两个层次的人都具有足够的经验从同样的视角看出问题，但战略决策会有所不同，专家具有更明显的直觉情境回应能力，或者说，已经具备了以适当的方式去做适当的事情的能力，在处理问题的过程中能够做到随机应变，体现出直接的、直觉的情境式的反应。这时，学习者的直觉思维完全替代了理性思维。</p></li><li><p>驾驭(Mastery)阶段。在这个阶段，学习者体现出明显的创新能力，形成了自己的独特风格，达到了技能的最高水平,德雷福斯称之为“大师”。德雷福斯反复强调说，从专家阶段到大师阶段，一定是在师徒关系中完成的。师徒关系的学习,要求有专家在场。也就是说，学习者需要拜几位自己敬佩或崇拜的大家为师，并花时间与他们一起工作,通过模仿大师的风格最终形成自己的风格。但值得注意的是，师徒工作从整体上模仿每一位大师的不同风格。与几位大师一起工作使得学习者能够在博众家所长的基础上，最终形成自己的独特风格。</p></li><li><p>实践智慧(Practice Wisdom)阶段。实践智慧阶段是技能的最高境界，达到这个层次的技能具有了社会性，成为一项社会技能，并形成了一种文化实践。在特殊领域内，人们不仅必须通过模仿专家的风格获得技能，而且为了获得亚里士多德所说的实践智慧，即在适当的时间、以适当的方式、做适当的事情的一般能力必须学到专家的文化风格。文化风格是体知型的(embodied),不可能从某一个理论中捕获到也不是在课堂上通过语言来传递的，而只是在实践中通过人与人的相五作用来潜在地传递或者说，文化渗透是无形的，是生活的潜在“向导”。</p></li></ol><p></p><p><strong>德雷福斯模型7阶段中的三大转变</strong></p><p>前三个阶段为低级阶段，第四个阶段为过渡期，后三个阶段为高级阶段。在德雷福斯看来，虽然并不是每位技能获得者最终都能够达到技能的高级阶段，而且，在学习过程中，这几个阶段的划分也不是绝对的，有时会相互交叉,但是，所有能够达到高级阶段的学习者，在他们成长为专家和大师的过程中，通常都经历了非常值得关注的三大转变：</p><ol><li><p>情感转变</p></li><li><p>实践转变</p></li><li><p>认知转变</p></li></ol></div>
+            <div class="files"></div>
+        </div>
+    
+        <div class="memo">
+            <div class="time">2024-01-11 15:08:18</div>
+            <div class="content"><p>#ReadNotes/卡片笔记写作法 </p><p>停止制订计划之时，就是开始学习之时。</p><p>学术写作的高手们拥有一种后天习得的直觉，能够判断什么事对完成任务有帮助，而什么事只是干扰。</p><p>根据德雷福斯的模型理论，正确运用学习到的规则，可以使你成为一个称职的“胜任者”（位于5层级模型中的第3层级），但它不会使你成为“精通者”（第4层级），当然也不会使你变成“专家”（第5层级）。</p></div>
+            <div class="files"></div>
+        </div>
+    
+        <div class="memo">
+            <div class="time">2024-01-11 15:01:30</div>
+            <div class="content"><p>#ReadNotes/卡片笔记写作法 </p><p>在写作阶段，我们必须把注意力集中在自己的思想上。如果每遇到一句话不完美就过早地反复修正，就永远写不出任何东西。我们需要先把想法写在纸上，然后在真实可见的纸上进行修改。</p><p>校对需要的是更专注的注意力，而写作过程中寻找合适的词语则需要更多的漂浮注意力。</p><p>如果我们不用同时考虑文章的结构，就更容易集中精力琢磨正确的词语。这就是我们为什么应该把稿件的大纲打印出来，一直放在眼前的原因。我们必须搞清楚眼下哪些内容不必写，因为知道这些内容要写在其他章节里。</p><p>概括或修改提纲也是一项截然不同的任务，它要求我们关注另外一些东西，即整个论点，而不是其中一个想法。</p></div>
+            <div class="files"></div>
+        </div>
+    
+        <div class="memo">
+            <div class="time">2024-01-11 14:07:30</div>
+            <div class="content"><p>#ReadNotes/卡片笔记写作法 </p><p>#Relation/简单与复杂</p><p>越简单的想法往往具有越强大的效果（并且在一开始总被忽视）。</p><p>#Examples 马尔科姆·麦克莱恩(Malcom McLean)是一家卡车运输公司的老板，也曾经是一名卡车司机，经常被堵在拥挤的沿海高速公路上。他只有一个简单的想法，就是如何规避拥堵的道路，但他没有预料到这个简单的想法会重塑全球政治格局，让一些国家崛起、另一些国家落后；让一些百年老字号没落、一些新的产业兴起。可以说，几乎没有人不受其影响。显然，我说的是海运集装箱，它本质上就是一个箱子。1956年4月26日，麦克莱恩把“理想X号(Ideal X)”邮轮改装成可以装载58个集装箱的邮轮起航的时候，仅仅是因为这种直接装卸集装箱的分装方式比整船装卸货物的方式便捷，能免于在港口漫长的等待几天。他的目的当然不是要颠覆世界贸易格局，为亚洲成为下一个经济巨头铺平道路，他只是不想再被堵在路上了。</p><p>每一件货物配上最合适的包装，通过调整对货物的摆放和堆叠，能够优化船上的空间利用。为什么要用一个明显不太理想的代替方案呢？为什么有人要尝试把方形的箱子装进弧形的船体呢？而且船东认为也没有多少客户愿意完全按照集装箱刚好能装下的数量来发货。把集装箱装进轮船里，常常让客户不满意——集装箱不是半空，就是装满了不同客户的货物，这就意味着必须在每个港口拆开集装箱，按照不同的订单重新拣分货物。在有经验的托运人看来，这不但效率低下，而且集装箱本身也会出现问题：一旦集装箱被误卸并送上卡车，就得想办法把它们找回来重新运输——麦克莱恩就这样丢失了数百个集装箱，这是物流管理的噩梦。</p><p>顺便说一句，麦克莱恩并不是唯一想在船上使用集装箱的人。许多人做过尝试，但几乎所有人都在不久之后放弃了这个想法——不是因为他们太固执，不愿意接受一个伟大的想法，而是因为他们在这个想法上损失了太多的钱(Levinson,2006)。这个想法很简单，但要高效地将其付诸实践却并非易事。</p><p>我们现在已经知道他们失败的原因：船东试图将集装箱融入他们的惯常工作方式中，却没有尝试改变基础设施和日常工作内容。他们想借用集装箱装船的便捷，但不愿放弃他们所习惯的作业方式。最初，这种想法很大程度上是因为他们认为旧的工作方式更有效率，因为只有最直接的影响是可见的。船东们看着一袋袋、一箱箱的货物，不明白为什么要把它们再装进另一个箱子里。当他们在港口卸下货物时，心里非常高兴，急于起航。他们不明白为什么要去找回集装箱；他们看着自己的船，也不知道如何把集装箱装进船里。麦克莱恩比别人更明白，重要的不是船东的观点，而是整个贸易的目的，即把货物从生产者那里带到最终目的地。只有将运输链的每一个环节——从包装到运送，从设计船舶到设计港口——都统一起来之后，集装箱的潜力才能够得到充分释放。</p></div>
+            <div class="files"></div>
+        </div>
+    
+        <div class="memo">
+            <div class="time">2024-01-11 14:02:02</div>
+            <div class="content"><p>#ReadNotes/卡片笔记写作法 柏林洪堡大学(the H umboldt U niversity of Berlin)的创始人、著名探险家亚历山大·冯·洪堡(Alexander von H umboldt)的哥哥威廉·冯·洪堡(Wilhelm von H umboldt)所说，教授不是为了学生而存在的，学生也不是为了教授而存在的，两者都只为真理而存在，而真理永远属于公共事务。</p></div>
+            <div class="files"></div>
+        </div>
+    
+        <div class="memo">
+            <div class="time">2024-01-11 12:52:58</div>
+            <div class="content"><p>#ReadNotes/卡片笔记写作法/Extends  </p><p>#Persons/戴维·艾伦 (David Allen)在《搞定》(Getting Things Done,2001)一书中强调了“总体工作流程的重要性”。艾伦的这套理论简称为 #Areas/Tools/GTD 。</p><p>#Areas/Tools/GTD 的原则是把所有需要处理的事情收集到一起，并以标准化的方式进行处理。</p><ul><li><p>GTD依赖于明确界定的目标</p></li><li><p>GTD要求将项目分解成更小、更具体的“下一步”</p></li></ul><p>只有当信任系统，而且知道一切都可以处理好的时候，大脑才会放开，才能专注于手头的任务。</p></div>
+            <div class="files"></div>
+        </div>
+    
+        <div class="memo">
+            <div class="time">2024-01-11 12:50:06</div>
+            <div class="content"><p>#ReadNotes/卡片笔记写作法 大多数注意力分散的情况并不是源于我们的环境，而是源于我们自己的思想。</p></div>
+            <div class="files"></div>
+        </div>
+    
+        <div class="memo">
+            <div class="time">2024-01-11 12:44:47</div>
+            <div class="content"><p>#ReadNotes/卡片笔记写作法/Extends 邓宁—克鲁格效应(Kruger and Dunning,1999)。</p><p>简称达克效应（DK effect），指的是能力欠缺的人在自己欠考虑的决定的基础上得出错误结论，但是无法正确认识到自身的不足，辨别错误行为，是一种认知偏差现象。这些能力欠缺者们沉浸在自我营造的虚幻的优势之中，常常高估自己的能力水平，却无法客观评价他人的能力。</p></div>
+            <div class="files"></div>
+        </div>
+    
+        <div class="memo">
+            <div class="time">2024-01-11 12:33:35</div>
+            <div class="content"><p>#ReadNotes/卡片笔记写作法 学习心理学上关于成功模仿的四要素——观察、保持、复现和动机。</p></div>
+            <div class="files"></div>
+        </div>
+    
+        <div class="memo">
+            <div class="time">2024-01-11 12:30:50</div>
+            <div class="content"><p>#ReadNotes/卡片笔记写作法/Extends </p><ul><li><p>教授记笔记的形式</p><ul><li><p>一页纸法</p></li><li><p>九宫格法</p></li><li><p>思维导图法</p></li></ul></li><li><p>教授原理为主的形式</p><ul><li><p>如费曼笔记法</p></li><li><p>康奈尔笔记法</p></li><li><p>PQ4R法</p></li></ul></li><li><p>阅读方法</p><ul><li><p>SQ3R阅读法</p></li><li><p>SQ4R阅读法</p></li></ul></li></ul></div>
+            <div class="files"></div>
+        </div>
+    
+        <div class="memo">
+            <div class="time">2024-01-11 12:25:24</div>
+            <div class="content"><p>#ReadNotes/卡片笔记写作法 像Room research、卡片盒笔记这类软件，在吸纳卢曼卡片盒写作法思想的基础上，做出了两个核心贡献。</p><p>一是将文本的颗粒度拆分得更细。组块(block)是认知科学上的一个常用概念，文本组块正是这个概念的具象化。</p><p>二是建立了一个“双向引用”关系。</p></div>
+            <div class="files"></div>
+        </div>
+    
+        <div class="memo">
+            <div class="time">2024-01-11 12:24:41</div>
+            <div class="content"><p>#ReadNotes/卡片笔记写作法 卢曼经常使用的索引可以分为以下四类：</p><p>第一类是主题索引。当某个主题的内容积累得足够丰富，卢曼就会做一张主题索引卡，对这个主题进行概览。主题索引卡上会汇集所有相关笔记的编码或链接，每条笔记会用一两个词或一个短句简要说明核心内容。这类索引，相当于给了你一个进入某一主题的入口。</p><p>第二类与主题索引类似，只不过不是对某一主题的概览，而是针对盒子里相近位置的卡片所涉及的所有不同主题进行概览。</p><p>第三类是在当前卡片上做索引，标明这条笔记逻辑上的前一条是什么、后一条是什么（这些卡片在盒子里的位置可能并不挨着）。</p><p>第四类，也是最常用的索引形式，就是简单的“笔记-笔记”连接。两条笔记可能完全没有关系，把它们关联在一起，往往会产生出乎意料的新思路。</p><p>通过这些关联操作，我们能更好地对卡片内容进行组合、拼接、提取，从而产生更高质量的内容。</p></div>
+            <div class="files"></div>
+        </div>
+    
+        <div class="memo">
+            <div class="time">2024-01-11 12:23:32</div>
+            <div class="content"><p>#ReadNotes/卡片笔记写作法 人的 #Symbol/记忆 有两种基本机制：存储与提取。比约克率先区分了 #Symbol/记忆 竞争的两种不同类型：存储强度(storage strength)与提取强度(retrieval strength)。</p><p>实验发现了与常识相反的结论：“存储与提取负相关”，也就是说，存入记忆越容易，提取出来越困难；反之，如果你有些吃力地存入，知识提取会更方便。</p></div>
+            <div class="files"></div>
+        </div>
+    
+        <div class="memo">
+            <div class="time">2024-01-11 12:12:31</div>
+            <div class="content"><p>#ReadNotes/卡片笔记写作法  </p><p>#Persons/尼克拉斯·卢曼/Introduce</p><p>卢曼是谁？尼克拉斯·卢曼是20世纪德国重要的社会学家，而且其影响力已远远超出了社会学领域。对我来说，卢曼不仅仅是一位社会学家，更是一位“自创生理论”专家。他将认知科学家F·瓦雷拉(F.Varela)开创的“自创生理论”率先应用到法律中，去解释法律和社会的交互关系，出版了经典的《法社会学》、《社会的社会》(The Society of Society,1997)。卢曼在他长达30多年的研究中，以学术高产著称，出版了58本著作和数百篇文章。</p><p>他为什么能取得如此杰出的成就？2013年，德国社会学家约翰内斯·F.K.施密特在做了大量研究后发现：卢曼的生产力源于他的卡片盒写作法。我之前在《纳博科夫的卡片》等文章中，曾介绍过纳博科夫等人的卡片写作法。</p><p>那么，卢曼与他们的最大区别是什么呢？——多了一个盒子。</p></div>
+            <div class="files"></div>
+        </div>
+    
+        <div class="memo">
+            <div class="time">2024-01-10 18:05:11</div>
+            <div class="content"><p>#句子 极端的行为来源于虚荣，平庸的行为来源于习惯，狭隘的行为来源于恐惧。  by.#Persons/弗里德里希·威廉·尼采</p></div>
+            <div class="files"></div>
+        </div>
+    
+        <div class="memo">
+            <div class="time">2024-01-10 18:04:48</div>
+            <div class="content"><p>#句子 你的百般注解和评价并不能构成万分之一的我，却足以暴露一览无余的你自己。</p></div>
+            <div class="files"></div>
+        </div>
+    
+        <div class="memo">
+            <div class="time">2024-01-10 18:04:18</div>
+            <div class="content"><p>#句子 你说遇事不决，可问春风，春风不语，即随本心，可我若本心坚定，怎会遇事不决？春风也有春风愁，不劳春风为我忧。</p></div>
+            <div class="files"></div>
+        </div>
+    
+        <div class="memo">
+            <div class="time">2024-01-10 17:50:07</div>
+            <div class="content"><p>#Areas/Wisdom</p><ol><li><p>破情关，放下我执</p><ul><li><p>爱一个的人的本质是爱上了自己的某种需求。感情外求，贪嗔痴。</p></li></ul></li></ol><ol start="2"><li><p>内观修己</p><ul><li><p>清醒的感知和观察自己，注意力回归到自身。</p></li><li><p>心神不乱，守正、积势、待时。</p></li></ul></li></ol><ol start="3"><li><p>不动因果</p><ul><li><p>通人性，知姻缘，顺应天时，不动他人因果</p></li><li><p>顺势而为，才能顺应天道</p></li></ul></li></ol><ol start="4"><li><p>空杯心境</p><ul><li><p>放空，自然流动</p></li><li><p>心存慈悲，不与外求，本自具足</p></li></ul></li></ol><ol start="5"><li><p>无我</p><ul><li><p>见天地众生后见自己</p></li><li><p>天赋、意义、方向皆顺应天时</p></li><li><p>顺应天道</p></li></ul></li></ol></div>
+            <div class="files"></div>
+        </div>
+    
+        <div class="memo">
+            <div class="time">2024-01-10 17:46:53</div>
+            <div class="content"><p>#Models/乌卡时代|VUCA ，是volatile，uncertain，complex，ambiguous的缩写。四个单词分别是易变不稳定、不确定、复杂和模糊的意思。乌卡时代是一个具有现代概念的词，是指我们正处于一个易变性、不确定性、复杂性、模糊性的世界里。</p><p>乌卡时代(VUCA )中每个元素的深层含义是用来提高VUCA的的预见性和洞察力的战略意义，以及要提高组织和个人在企业中的行动力。</p><p>V=Volatility（易变性）是变化的本质和动力，也是由变化驱使和催化产生的</p><p>U=Uncertainty（不确定性）缺少预见性,缺乏对意外的预期和对事情的理解和意识</p><p>C=Complexity（复杂性）企业为各种力量，各种因素，各种事情所困扰。</p><p>A=Ambiguity（模糊性）对现实的模糊，是误解的根源，各种条件和因果关系的混杂。</p><p>这些因素描述了企业在展望他们当前和未来的状态的情景，表明了企业在制定政策或计划时的边缘性。这些因素使我们制定计划或者向未来展望的时候变得微不足道。</p></div>
+            <div class="files"></div>
+        </div>
+    
+              </div>
+              <script>
+                const memos = document.querySelectorAll(".memo");
+                const dateSelect = document.querySelector("#date");
+                const tagSelect = document.querySelector("#tag");
+                const filterBtn = document.querySelector("button");
+                filterBtn.addEventListener("click", () => {
+                  const date = dateSelect.value;
+                  const tag = tagSelect.value;
+
+                  memos.forEach((memo) => {
+                    const time = memo.querySelector(".time").innerText;
+                    const content = memo.querySelector(".content").innerText;
+                    const isDateMatch = time.includes(date);
+                    const isTagMatch = content.includes(tag);
+                    if (isDateMatch && isTagMatch) {
+                      memo.style.display = "block";
+                    } else {
+                      memo.style.display = "none";
+                    }
+                  });
+                });
+              </script>
+              <script src='select.js'></script>
+
+            </body>
+        </html>
+    

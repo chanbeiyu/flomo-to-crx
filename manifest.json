@@ -1,0 +1,49 @@
+{
+    "name": "Memos Plus",
+    "version": "0.0.0.1",
+    "manifest_version": 3,
+    "description": "An extension to display the NASA picture of the day.",
+    "homepage_url": "https://ensoul.club",
+    "omnibox": {
+        "keyword": "Memos"
+    },
+    "icons": {
+        "16": "icons/icon16x16.png",
+        "32": "icons/icon32x32.png",
+        "48": "icons/icon48x48.png",
+        "128": "icons/icon128x128.png"
+    },
+    "action": {
+        "default_title": "Memos Plus",
+        "default_popup": "popup/popup.html"
+    },
+    "permissions": [
+        "contextMenus",
+        "storage",
+        "activeTab",
+        "tabs",
+        "notifications"
+    ],
+    "background": {
+        "service_worker": "scripts/background.js",
+        "type": "module"
+    },
+    "content_scripts": [{
+        "js": [
+            "lib/jquery-3.7.1.js",
+            "scripts/content.js"
+        ],
+        "matches": [
+            "<all_urls>"
+        ]
+    }],
+    "web_accessible_resources": [{
+        "resources": [
+            "images/*.jpg",
+            "scripts/*.js"
+        ],
+        "matches": [
+            "<all_urls>"
+        ]
+    }]
+}
