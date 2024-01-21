@@ -1,0 +1,44 @@
+{
+    "Name": {
+        "title": [
+            {
+                "text": {
+                    "content": ""
+                }
+            }
+        ]
+    },
+    "Tags": {
+        "multi_select": [
+            {
+                "name": "Memos Plus"
+            }
+        ]
+    },
+    "Slug": {
+        "rich_text": [
+            {
+                "type": "text",
+                "plain_text": "Memos Plus",
+                "href": null,
+                "text": {
+                    "content": "Memos Plus",
+                    "link": null
+                }
+            }
+        ]
+    },
+    "URL": {
+        "url": ""
+    },
+    "CreatedAt": {
+        "date": {
+            "start": ""
+        }
+    },
+    "LasteditedAt": {
+        "date": {
+            "start": ""
+        }
+    }
+}

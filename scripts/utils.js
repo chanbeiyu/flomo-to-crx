@@ -38,7 +38,7 @@ export const getCurrentTab = (callback) => {
 
 // 发送消息
 export const sendMessageToConetnt = (cmd, data, callback) => {
-    console.log("[utils] -> send message to conetnt: ", cmd, data);
+    //console.log("[utils] -> send message to conetnt: ", cmd, data);
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
         chrome.tabs.sendMessage(tabs[0].id, { cmd: cmd, data: data }, function (response) {
             if (callback) callback(response);
@@ -50,7 +50,7 @@ export const sendMessage = (cmd, data, callback) => {
     if (cmd.startsWith("content.")) {
         sendMessageToConetnt(cmd, data, callback);
     } else {
-        console.log("[utils] -> send message: ", cmd, data);
+        //console.log("[utils] -> send message: ", cmd, data);
         chrome.runtime.sendMessage({ cmd: cmd, data: data }, function (response) {
             if (callback) callback(response);
         });

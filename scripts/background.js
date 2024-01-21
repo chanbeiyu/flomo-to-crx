@@ -64,8 +64,8 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         return true;
     } else if (cmd == "background.send.notion") {
         sendNotion(data.databaseId, data.content, data.title, data.url, function (result) {
-            sendResponse(result);
             console.log("[background] -> send notion result: ", result);
+            sendResponse(result);
         });
         return true;
     }
@@ -125,7 +125,6 @@ async function notionHeaders() {
     headers.append("Content-Type", "application/json");
     headers.append("Authorization", "Bearer " + notionApiKey);
     headers.append(Notion.versionName, Notion.versionValue);
-    console.log("[background] -> headers: ", headers.values());
     return headers;
 }
 
@@ -178,22 +177,22 @@ async function sendNotion(databaseId, content, title, url, callback) {
 async function flomoToNotion(databaseId, memos, callback) {
     // 获取 Notion 数据
     const notionPages = await loadNotionDatabase(databaseId);
-    const notionPageMap = new Map(
-        notionPages.map((dbResult) => {
-            return [dbResult.slug, dbResult];
-        })
-    );
-
+    // const notionPageMap = new Map(
+    //     notionPages.map((dbResult) => {
+    //         return [dbResult.slug, dbResult];
+    //     })
+    // );
+    let waitTimes = 0;
     memos.forEach((memo, index) => {
         // 转换 momos 数据到 notion create page json
-        const requestJSON = memo2CreateRequest(memo);
-        console.log("=======", requestJSON);
-        //const requestJSON = memo2UpdateRequest(memo);
-        //Utils.saveNotionPage(requestJSON);
-        //Utils.updateNotionPage(requestJSON);
+        setTimeout(function () {
+            memo2CreateRequest(databaseId, memo).then((createJSON) => {
+                saveNotionPage(createJSON);
+            });
+        }, waitTimes + 200);
     });
 
-    let result = { code: -1, message: "保存数据失败" };
+    let result = { code: -1, message: "保存数据..." };
     if (callback) {
         callback(result);
     } else {
@@ -205,17 +204,17 @@ async function flomoToNotion(databaseId, memos, callback) {
 async function memo2CreateRequest(databaseId, memo) {
     let createJSON = await loadJSON(Notion.createJSON);
     createJSON.parent.database_id = databaseId;
-    createJSON.Name.title[0].text.content = memo.slug;
+    createJSON.properties.Name.title[0].text.content = memo.slug;
     const tags = memo.tags;
     tags.forEach((tag, index) => {
         createJSON.properties.Tags.multi_select[index] = { name: tag };
     });
-    createJSON.CreatedAt.date.start = memo.created_at.replaceAll("-", "/");
-    createJSON.LasteditedAt.date.start = memo.updated_at.replaceAll("-", "/");
-    createJSON.Slug.rich_text[0].text.content = memo.slug;
-    createJSON.Slug.rich_text[0].plain_text = memo.slug;
-    createJSON.URL.title[0].text.content = Flomo.linkURL + memo.slug;
-    createJSON.children[0].paragraph.rich_text[0].text.content = memo.content;
+    createJSON.properties.CreatedAt.date.start = memo.created_at.replaceAll("/", "-");
+    createJSON.properties.LasteditedAt.date.start = memo.updated_at.replaceAll("/", "-");
+    createJSON.properties.Slug.rich_text[0].text.content = memo.slug;
+    createJSON.properties.Slug.rich_text[0].plain_text = memo.slug;
+    createJSON.properties.URL.url = Flomo.linkURL + memo.slug;
+    createJSON.children[0].paragraph.rich_text[0].text.content = memo.content.substring(0, 2000);
     return createJSON;
 }
 
@@ -223,16 +222,16 @@ async function memo2CreateRequest(databaseId, memo) {
 async function memo2UpdateRequest(databaseId, memo) {
     let createJSON = await loadJSON(Notion.createJSON);
     createJSON.parent.database_id = databaseId;
-    createJSON.Name.title[0].text.content = memo.slug;
+    createJSON.properties.Name.title[0].text.content = memo.slug;
     const tags = memo.tags;
     tags.forEach((tag, index) => {
         createJSON.properties.Tags.multi_select[index] = { name: tag };
     });
-    createJSON.CreatedAt.date.start = memo.created_at.replaceAll("-", "/");
-    createJSON.LasteditedAt.date.start = memo.updated_at.replaceAll("-", "/");
-    createJSON.Slug.rich_text[0].text.content = memo.slug;
-    createJSON.Slug.rich_text[0].plain_text = memo.slug;
-    createJSON.URL.title[0].text.content = Flomo.linkURL + memo.slug;
+    createJSON.properties.CreatedAt.date.start = memo.created_at.replaceAll("/", "-");
+    createJSON.properties.LasteditedAt.date.start = memo.updated_at.replaceAll("/", "-");
+    createJSON.properties.Slug.rich_text[0].text.content = memo.slug;
+    createJSON.properties.Slug.rich_text[0].plain_text = memo.slug;
+    createJSON.properties.URL.url = Flomo.linkURL + memo.slug;
     createJSON.children[0].paragraph.rich_text[0].text.content = memo.content;
     return createJSON;
 }
@@ -269,15 +268,25 @@ async function loadNotionDatabase(databaseId) {
     await fetch(`https://api.notion.com/v1/databases/${databaseId}/query`, {
         method: "POST",
         headers: headers,
-        body: {},
+        body: "{}",
     })
         .then((response) => response.json())
         .then((data) => {
             console.log("[background] -> query notion success: ", data);
             const results = data.results;
-            notionDatas = results.forEach((result, index) => {
-                return toNotionDBData(result);
-            });
+            notionDatas = results
+                .filter((o) => {
+                    return o.properties.Slug.rich_text && o.properties.Slug.rich_text.length > 0;
+                })
+                .forEach((result, index) => {
+                    return {
+                        pageId: result.id,
+                        slug: result.properties.Slug.rich_text[0].text.content,
+                        url: result.properties.URL.url,
+                        createdAt: result.properties.CreatedAt.date.start,
+                        lasteditedAt: result.properties.LasteditedAt.date.start,
+                    };
+                });
             const code = data.object == "error" ? -1 : 0;
             Utils.sendMessage("popup.flomo2notion.progress", { code: code, steps: "load.notion", message: "获取 Notion 数据成功" });
         })
@@ -303,10 +312,10 @@ function toNotionDBData(result) {
     }
     return {
         pageId: result.id,
-        slug: result.Slug.rich_text.text.content,
-        url: result.URL.url,
-        createAt: result.CreateAt.date.start,
-        lasteditedAt: result.LasteditedAt.date.start,
+        slug: result.properties.Slug.rich_text[0].text.content,
+        url: result.properties.URL.url,
+        createAt: result.properties.CreateAt.date.start,
+        lasteditedAt: result.properties.LasteditedAt.date.start,
         inlinks: inlinks,
         outlinks: outlinks,
     };
@@ -318,19 +327,23 @@ async function saveNotionPage(createJSON) {
     const headers = await notionHeaders();
     console.log("[background] -> save notion request:", headers, requestBody);
 
-    await fetch(Notion.createURL, {
-        method: Notion.createMethod,
+    await fetch("https://api.notion.com/v1/pages", {
+        method: "POST",
         headers: headers,
         body: requestBody,
     })
         .then((response) => response.json())
         .then((data) => {
-            console.log("[background] -> save notion success: ", data);
+            //console.log("[background] -> save notion success: ", data);
             const code = data.object == "error" ? -1 : 0;
-            Utils.sendMessage("popup.flomo2notion.progress", { code: code, steps: "save.notion", message: "保存 Notion 数据失败" });
+            const message = data.object == "error" ? "保存 Notion 数据失败: " + data.message : "保存 Notion 数据成功";
+            if (code != 0) {
+                console.error("[background] -> save notion error: ", requestBody, data);
+            }
+            Utils.sendMessage("popup.flomo2notion.progress", { code: code, steps: "save.notion", message: message });
         })
         .catch((error) => {
-            console.error("[background] -> save notion error: ", error);
+            console.error("[background] -> save notion error: ", requestBody, error);
             Utils.sendMessage("popup.flomo2notion.progress", { code: -2, steps: "save.notion", message: "保存 Notion 数据失败" });
         });
 }

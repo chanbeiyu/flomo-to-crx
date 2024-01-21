@@ -15,7 +15,6 @@ function notify(message, error = false, times = 2000) {
     }
 }
 function showNotify() {
-    console.log("==========", messageQueue);
     messageActive = true; 
     const m = messageQueue.shift();
     $("#message").text(m.message);
@@ -37,14 +36,14 @@ function showProgress(data) {
 
 // 监听消息
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-    console.log("[popup] -> receive runtime message: ", request);
+    //console.log("[popup] -> receive runtime message: ", request);
     const cmd = request.cmd;
     const data = request.data;
     if (cmd == "popup.notify") {
         notify(data.message, data.code == 0);
     }
     if (cmd == "popup.flomo2notion.progress") {
-        $("#syncState").text(data.message);
+        showProgress(data);
     }
     sendResponse({});
 });
@@ -150,7 +149,7 @@ $(function () {
     $("#flomo-to-notion").on("click", function () {
         Utils.sendMessage("content.load.flomo", {}, function (result) {
             console.log("[popup] -> load flomo result: ", result);
-            if (result.code == 0) {
+            if (result.code == 0 && result.data && result.data.length > 0) {
                 Utils.sendMessage("background.flomoToNotion", { databaseId: notionDatabaseId, memos: result.data }, function (response) {
                     console.log("[popup] -> flomoToNotion callback: ", response);
                     //showProgress(response.message);
