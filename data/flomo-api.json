@@ -1,0 +1,88 @@
+fetch("https://flomoapp.com/api/v1/memo", {
+  "headers": {
+    "accept": "application/json, text/plain, */*",
+    "accept-language": "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "authorization": "Bearer 4339886|M2l1odzUWRq5o1E0poKI1FV872uMZYQoRHV2jSEb",
+    "cache-control": "no-cache",
+    "content-type": "application/json;charset=UTF-8",
+    "pragma": "no-cache",
+    "sec-ch-ua": "\"Not_A Brand\";v=\"8\", \"Chromium\";v=\"120\", \"Microsoft Edge\";v=\"120\"",
+    "sec-ch-ua-mobile": "?0",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "sec-fetch-dest": "empty",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-site": "same-site"
+  },
+  "referrer": "https://v.flomoapp.com/",
+  "referrerPolicy": "strict-origin-when-cross-origin",
+  "body": "{\"content\":\"<p>ewqewqewqew</p>\",\"created_at\":1705580514,\"source\":\"web\",\"file_ids\":[],\"tz\":\"8:0\",\"timestamp\":1705580514,\"api_key\":\"flomo_web\",\"app_version\":\"2.0\",\"platform\":\"web\",\"webp\":\"1\",\"sign\":\"74fd3e06c9d44eb0947f43901be24282\"}",
+  "method": "PUT",
+  "mode": "cors",
+  "credentials": "include"
+}); ;
+
+fetch("https://flomoapp.com/api/v1/memo/MTAwNDY4OTg4", {
+  "headers": {
+    "accept": "application/json, text/plain, */*",
+    "accept-language": "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "authorization": "Bearer 4339886|M2l1odzUWRq5o1E0poKI1FV872uMZYQoRHV2jSEb",
+    "cache-control": "no-cache",
+    "content-type": "application/json;charset=UTF-8",
+    "pragma": "no-cache",
+    "sec-ch-ua": "\"Not_A Brand\";v=\"8\", \"Chromium\";v=\"120\", \"Microsoft Edge\";v=\"120\"",
+    "sec-ch-ua-mobile": "?0",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "sec-fetch-dest": "empty",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-site": "same-site"
+  },
+  "referrer": "https://v.flomoapp.com/",
+  "referrerPolicy": "strict-origin-when-cross-origin",
+  "body": "{\"content\":\"<p>ewqewqewqew  #Relation/游戏机制和规则  </p>\",\"created_at\":1705580514,\"local_updated_at\":1705581041,\"file_ids\":[],\"tz\":\"8:0\",\"timestamp\":1705581042,\"api_key\":\"flomo_web\",\"app_version\":\"2.0\",\"platform\":\"web\",\"webp\":\"1\",\"sign\":\"185062f15e883cff452807e3f298f4d1\"}",
+  "method": "PUT",
+  "mode": "cors",
+  "credentials": "include"
+});
+
+
+// flomo Result：
+// {
+//     "code": 0,
+//     "message": "已记录",
+//     "memo": {
+//         "creator_id": 996526,
+//         "source": "incoming_webhook",
+//         "content": "<p></p>",
+//         "tags": [],
+//         "updated_at": "2024-01-15 12:31:54",
+//         "created_at": "2024-01-15 12:31:54",
+//         "linked_memos": [],
+//         "linked_count": 0,
+//         "slug": "OTk5MzgxNzI"
+//     }
+// }
+// {
+//     "content": "<p>#ReadNotes/卡片笔记写作法 #Symbol/学习动机 是优秀学生最重要的指标之一，仅次于他们掌控自己学习过程的感觉。</p><p>如果我们被一个看似不值得做的项目困住，会非常沮丧；而看到我们认同的项目在推进，则会让我们备受鼓舞。</p><p>因此，在工作的每一步，我们都可以问自己：“这件事有什么有趣的地方？”或在阅读时常常问自己：“与这件事相关的事情中，哪些值得我们记录下来？”那么，除了根据兴趣挑选信息，我们还可以对工作中遇到的问题进行详细阐释，发掘出我们以前不知道的方面，从而延伸自己的兴趣。</p><p> https://v.flomoapp.com/mine/?memo_id=OTk0MTExODY </p>",
+//     "creator_id": 996526,
+//     "source": "ios",
+//     "tags": [
+//         "ReadNotes/卡片笔记写作法",
+//         "ReadNotes",
+//         "Symbol/学习动机",
+//         "Symbol"
+//     ],
+//     "pin": 0,
+//     "created_at": "2024-01-11 22:57:53",
+//     "updated_at": "2024-01-11 23:52:34",
+//     "deleted_at": null,
+//     "slug": "OTk0MTA3ODc",
+//     "linked_count": 0,
+//     "files": [],
+//     "created_at_long": 1704985073,
+//     "deleted_at_long": 0,
+//     "updated_at_long": 1704988354,
+//     "links": [
+//         "https://v.flomoapp.com/mine/?memo_id=OTk0MTExODY"
+//     ],
+//     "id": 24
+// }

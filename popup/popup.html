@@ -1,89 +1,95 @@
 <html lang="zh_CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Memos Plus</title>
-    <link rel="stylesheet" type="text/css" href="/styles/popup.css">
-</head>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Memos Plus</title>
+        <link rel="stylesheet" type="text/css" href="/styles/popup.css" />
+    </head>
 
-<body>
-    <div id="message" class="message hide">
-        这是一个提示框！
-    </div>
-    <div id="tabs" class="tabs">
-        <span for="memos" class="tab-title active">闪念</span>
-        <span for="imports" class="tab-title">导入/导出</span>
-        <span for="labs" class="tab-title">实验室</span>
-        <span for="settings" class="tab-title">设置</span>
-        <span for="about" class="tab-title">关于</span>
-    </div>
-
-    <div id="containers">
-        <div id="memos" class="root">
-            <div class="container">
-                <textarea id="memos-textarea" name="memos-textarea" rows="10" maxlength="1500" placeholder="现在的想法是..."></textarea>
-                <div class="memos-link">
-                    <span id="link-text" class="link-text left"></span>
-                    <a id="link-x" class="link-x right"> ✕ </a>
-                </div>
-                <div class="memos-where">
-                    <input type="checkbox" id="flomo" name="flomo">
-                    <label for="flomo" class="slabel">flomo 浮墨</label>
-                    <input type="checkbox" id="notion" name="notion">
-                    <label for="notion" class="slabel">Notion</label>
-                </div>
-                <div class="memos-info">
-                    <span id="memos-counts" class="info-words left">0</span>
-                    <button id="memos-save" type="button" disabled class="right">发 布</button>
-                </div>
-            </div>
+    <body>
+        <div id="message" class="message hide">这是一个提示框！</div>
+        <div id="tabs" class="tabs">
+            <span for="memos" class="tab-title active">闪念</span>
+            <span for="labs" class="tab-title">实验室</span>
+            <span for="settings" class="tab-title">设置</span>
+            <span for="about" class="tab-title">关于</span>
         </div>
 
-        <div id="settings" class="root hide">
-            <div>
-                <div class="text-title">flomo 浮墨设置 ---</div>
+        <div id="containers">
+            <div id="memos" class="root">
+                <div class="container">
+                    <textarea id="memos-textarea" name="memos-textarea" rows="10" maxlength="1500" placeholder="现在的想法是..."></textarea>
+                    <div class="memos-link">
+                        <span id="link-text" class="link-text left"></span>
+                        <a id="link-x" class="link-x right"> ✕ </a>
+                    </div>
+                    <div class="memos-where">
+                        <input type="checkbox" id="flomo" name="flomo" class="label-checkbox" />
+                        <label for="flomo" class="slabel">flomo 浮墨</label>
+                        <input type="checkbox" id="notion" name="notion" class="label-checkbox" />
+                        <label for="notion" class="slabel">Notion</label>
+                    </div>
+                    <div class="memos-info">
+                        <span id="memos-counts" class="info-words left">0</span>
+                        <button id="memos-save" type="button" disabled class="right">发 布</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="settings" class="root hide">
                 <div>
-                    <input id="flomo-api" name="flomo-api" type="text" class="" placeholder="请输入 flomo API 地址" />
-                    <a href="https://v.flomoapp.com/mine/?source=incoming_webhook" target="_blank" rel="">点此获取</a>
+                    <div class="text-title">💠 flomo 浮墨设置 ---</div>
+                    <div>
+                        <input id="flomo-api" name="flomo-api" type="text" class="" placeholder="请输入 flomo API 地址" />
+                        <a href="https://v.flomoapp.com/mine/?source=incoming_webhook" target="_blank" rel="">点此获取</a>
+                    </div>
                 </div>
-            </div>
-            <div>
-                <div class="text-title">Notion 设置 ---</div>
                 <div>
-                    <input id="notion-api-key" name="notion-api-key" type="text" class="" placeholder="请输入 Notion Secrets" />
-                    <input id="notion-database-id" name="notion-database-id" type="text" class="" placeholder="请输入 database id" />
-                    <a href="/popup/about.html" target="_blank" rel="">查看如何获取</a>
+                    <div class="text-title">💠 Notion 设置 ---</div>
+                    <div>
+                        <input id="notion-api-key" name="notion-api-key" type="text" class="" placeholder="请输入 Notion Secrets" />
+                        <input id="notion-database-id" name="notion-database-id" type="text" class="" placeholder="请输入 database id" />
+                        <a href="/popup/about.html" target="_blank" rel="">查看如何获取</a>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div id="imports" class="root hide">
-            <div class="text-title">flomo 浮墨 导入到 Notion ---</div>
-            <div class="info-container">
-                flomo 浮墨 导入到 Notion，此功能需要处于
-                <a href="https://v.flomoapp.com/" title="打开站点">flomo 站点标签页</a>
-                上启用。由于 Notion API 导入限制，导入可能需要比较长的时间，期间请勿关闭浏览器或 flomo 标签页。
+            <div id="labs" class="root hide">
+                <div class="info-container">⚠️ 此页面功能处于实验阶段，请谨慎使用！</div>
+                <div class="text-title">💠 数据监听 ---</div>
+                <div class="info-container">
+                    <input type="checkbox" id="listener-flomo" name="flomo" />
+                    <label for="listener-flomo" class="slabel1">
+                        监听 flomo 浮墨的添加和更新，同步至 Notion
+                    </label>
+                    <br />
+                    <input type="checkbox" id="listener-notion" name="notion"/>
+                    <label for="listener-notion" class="slabel1">
+                        监听 Notion 的添加和更新
+                    </label>
+                </div>
+
+                <div class="text-title">💠 同步 flomo 至 Notion ---</div>
+                <div class="info-container">
+                    <ul>
+                        <li>
+                            此功能需要处于 <a href="https://v.flomoapp.com/" title="打开站点">flomo 站点标签页</a> 并登录后使用。
+                        </li>
+                        <li>由于 Notion API 导入限制，导入可能需要比较长的时间，期间请勿关闭浏览器或 flomo 标签页。</li>
+                    </ul>
+                </div>
+                <span class="syncStateTitle">同步状态：</span>
+                <span id="syncState" class="syncState">空闲...</span>
+                <button id="flomo-to-notion" type="button" disabled class="right">同 步</button>
             </div>
-            <button id="flomo-to-notion" type="button" disabled class="">flomo 导入 Notion</button>
-        </div>
- 
-        <div id="labs" class="root hide">
-            <div class="container">
-                这是一个实验室页面
+
+            <div id="about" class="root hide">
+                <div class="container"></div>
             </div>
         </div>
 
-        <div id="about" class="root hide">
-            <div class="container">
-                
-            </div>
-        </div>
-    </div>
-
-    <script src="/lib/jquery-3.7.1.js"></script>
-    <!-- <script src="/lib/marked.min.js"></script> -->
-    <script type="module" src="/scripts/popup.js"></script>
-</body>
-
+        <script src="/lib/jquery-3.7.1.js"></script>
+        <!-- <script src="/lib/marked.min.js"></script> -->
+        <script type="module" src="/scripts/popup.js"></script>
+    </body>
 </html>
- 

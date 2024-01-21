@@ -20,11 +20,6 @@
                 }
             ]
         },
-        "CreateAt": {
-            "date": {
-                "start": ""
-            }
-        },
         "Slug": {
             "rich_text": [
                 {
@@ -40,6 +35,16 @@
         },
         "URL": {
             "url": ""
+        },
+        "CreatedAt": {
+            "date": {
+                "start": ""
+            }
+        },
+        "LasteditedAt": {
+            "date": {
+                "start": ""
+            }
         }
     },
     "children": [
