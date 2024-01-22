@@ -56,8 +56,8 @@
 
             <div id="labs" class="root hide">
                 <div class="info-container">⚠️ 此页面功能处于实验阶段，请谨慎使用！</div>
-                <div class="text-title">💠 数据监听 ---</div>
-                <div class="info-container">
+                <div class="text-title hide">💠 数据监听 ---</div>
+                <div class="info-container hide">
                     <input type="checkbox" id="listener-flomo" name="flomo" />
                     <label for="listener-flomo" class="slabel1">
                         监听 flomo 浮墨的添加和更新，同步至 Notion
@@ -72,10 +72,10 @@
                 <div class="text-title">💠 同步 flomo 至 Notion ---</div>
                 <div class="info-container">
                     <ul>
-                        <li>
-                            此功能需要处于 <a href="https://v.flomoapp.com/" title="打开站点">flomo 站点标签页</a> 并登录后使用。
-                        </li>
-                        <li>由于 Notion API 导入限制，导入可能需要比较长的时间，期间请勿关闭浏览器或 flomo 标签页。</li>
+                        <li>无需 flomo Pro 会员</li>
+                        <li>需要处于 <a href="https://v.flomoapp.com/" title="打开站点">flomo 站点标签页</a> 并登录后使用</li>
+                        <li>当前会导入 flomo 中的全部数据，不会对 Notion Database 中的原有数据做任何更改</li>
+                        <li>导入可能需要比较长的时间，期间请勿关闭浏览器或 flomo 标签页。</li>
                     </ul>
                 </div>
                 <span class="syncStateTitle">同步状态：</span>
@@ -84,6 +84,16 @@
             </div>
 
             <div id="about" class="root hide">
+                <div class="text-title">💠 路线图 ---</div>
+                <div class="info-container">
+                    <ul>
+                        <li>优化闪念内容格式</li>
+                        <li>优化同步内容格式</li>
+                        <li>同步日志记录和查看</li>
+                        <li>网页选中内容添加到 flomo 或 Notion</li>
+                        <li>监听 flomo 网页版数据的添加和更新，同步至 Notion</li>
+                    </ul>
+                </div>
                 <div class="container"></div>
             </div>
         </div>

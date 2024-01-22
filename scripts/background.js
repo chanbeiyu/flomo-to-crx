@@ -17,33 +17,34 @@ const Notion = {
     versionValue: "2022-06-28",
     createJSON: "/data/notion-create-page.json",
     initdbJSON: "/data/notion-init-db.json",
+    initMemoJSON: "/data/notion-init-memo.json",
 };
 const Flomo = {
     linkURL: "https://v.flomoapp.com/mine/?memo_id=",
 };
 
 // 注册页面右键菜单
-chrome.runtime.onInstalled.addListener(async () => {
-    chrome.action.setBadgeText({
-        text: "OFF",
-    });
-    for (const [key, name] of Object.entries(Menus)) {
-        chrome.contextMenus.create({
-            id: key,
-            title: name,
-            type: "normal",
-            contexts: ["selection"], // 只有当选中文字时才会出现此右键菜单
-        });
-    }
-});
+// chrome.runtime.onInstalled.addListener(async () => {
+//     chrome.action.setBadgeText({
+//         text: "OFF",
+//     });
+//     for (const [key, name] of Object.entries(Menus)) {
+//         chrome.contextMenus.create({
+//             id: key,
+//             title: name,
+//             type: "normal",
+//             contexts: ["selection"], // 只有当选中文字时才会出现此右键菜单
+//         });
+//     }
+// });
 
 // 右键事件监听
-chrome.contextMenus.onClicked.addListener((item, tab) => {
-    const key = item.menuItemId;
-    const pageUrl = item.pageUrl;
-    const selectionText = item.selectionText;
-    console.log("onClicked: " + JSON.stringify(item));
-});
+// chrome.contextMenus.onClicked.addListener((item, tab) => {
+//     const key = item.menuItemId;
+//     const pageUrl = item.pageUrl;
+//     const selectionText = item.selectionText;
+//     console.log("onClicked: " + JSON.stringify(item));
+// });
 
 // 监听消息
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
@@ -175,24 +176,43 @@ async function sendNotion(databaseId, content, title, url, callback) {
 // flomo 数据保存到 Notion
 // TODO：配置 Notion 时增加链接检测，使用数据库查询接口判断，同时判断数据库是否初始化了对应的字段，如没有，则提示初始化
 async function flomoToNotion(databaseId, memos, callback) {
-    // 获取 Notion 数据
-    const notionPages = await loadNotionDatabase(databaseId);
-    // const notionPageMap = new Map(
-    //     notionPages.map((dbResult) => {
-    //         return [dbResult.slug, dbResult];
-    //     })
-    // );
-    let waitTimes = 0;
-    memos.forEach((memo, index) => {
-        // 转换 momos 数据到 notion create page json
-        setTimeout(function () {
-            memo2CreateRequest(databaseId, memo).then((createJSON) => {
-                saveNotionPage(createJSON);
-            });
-        }, waitTimes + 200);
-    });
+    let count = 0;
+    let total = memos.length;
+    const slugPageMap = new Map();
+    const pageSlugsMap = new Map();
 
-    let result = { code: -1, message: "保存数据..." };
+    for (const memo of memos) {
+        // 转换 momos 数据到 notion create page json
+        const result = await saveNotionPage(databaseId, memo);
+        if (result.code == 0) {
+            slugPageMap.set(memo.slug, result.data.id);
+            if (memo.links && memo.links.length > 0) {
+                const slugs = Utils.getSlugs(memo.links);
+                pageSlugsMap.set(result.data.id, slugs);
+            }
+            Utils.sendMessage("popup.flomo2notion.progress", { code: 0, steps: "save.notion", message: `导入数据中 ${++count}/${total}` });
+        } else {
+            console.error("[background] -> save notion error: ", result.error);
+        }
+    }
+    
+    count = 0;
+    total = pageSlugsMap.size;
+    const keys = pageSlugsMap.keys();
+    for (const pageId of keys) {
+        const slugs = pageSlugsMap.get(pageId);
+        if (slugs && slugs.length > 0) {
+            const memoIds = slugs.map((slug) => {
+                return slugPageMap.get(slug);
+            });
+            await initNotionMemo(pageId, memoIds);
+        }
+        Utils.sendMessage("popup.flomo2notion.progress", { code: 0, steps: "save.notion", message: `更新关联中 ${++count}/${total}` });
+    }
+    
+    Utils.sendMessage("popup.flomo2notion.progress", { code: 0, steps: "save.notion", message: `导入完成` });
+
+    let result = { code: 0, message: "保存数据完成" };
     if (callback) {
         callback(result);
     } else {
@@ -200,8 +220,31 @@ async function flomoToNotion(databaseId, memos, callback) {
     }
 }
 
-// memo 对象转换为创建 page json 请求体
-async function memo2CreateRequest(databaseId, memo) {
+// 用promise模拟封装一个睡眠函数
+function sleep(millsecond) {
+    return new Promise(function (resolve) {
+        setTimeout(resolve, millsecond);
+    });
+}
+
+// Notion 初始化 database
+async function initNotionDatabase(databaseId) {
+    const initDBJSON = await loadJSON(Notion.initdbJSON);
+    initDBJSON.properties.MEMO.relation.database_id = databaseId;
+    return await fetchNotion(`https://api.notion.com/v1/databases/${databaseId}`, "PATCH", initDBJSON);
+}
+
+// Notion 更新数据属性
+async function initNotionMemo(pageId, memoIds) {
+    const initMemoJSON = await loadJSON(Notion.initMemoJSON);
+    memoIds.forEach((memoId, index) => {
+        initMemoJSON.properties.MEMO.relation[index] = { id: memoId };
+    });
+    return await fetchNotion(`https://api.notion.com/v1/pages/${pageId}`, "PATCH", initMemoJSON);
+}
+
+// Notion 添加数据
+async function saveNotionPage(databaseId, memo) {
     let createJSON = await loadJSON(Notion.createJSON);
     createJSON.parent.database_id = databaseId;
     createJSON.properties.Name.title[0].text.content = memo.slug;
@@ -215,53 +258,37 @@ async function memo2CreateRequest(databaseId, memo) {
     createJSON.properties.Slug.rich_text[0].plain_text = memo.slug;
     createJSON.properties.URL.url = Flomo.linkURL + memo.slug;
     createJSON.children[0].paragraph.rich_text[0].text.content = memo.content.substring(0, 2000);
-    return createJSON;
+    return await fetchNotion("https://api.notion.com/v1/pages", "POST", createJSON);
 }
 
-// memo 对象转换为更新 page json 请求体
-async function memo2UpdateRequest(databaseId, memo) {
-    let createJSON = await loadJSON(Notion.createJSON);
-    createJSON.parent.database_id = databaseId;
-    createJSON.properties.Name.title[0].text.content = memo.slug;
-    const tags = memo.tags;
-    tags.forEach((tag, index) => {
-        createJSON.properties.Tags.multi_select[index] = { name: tag };
-    });
-    createJSON.properties.CreatedAt.date.start = memo.created_at.replaceAll("/", "-");
-    createJSON.properties.LasteditedAt.date.start = memo.updated_at.replaceAll("/", "-");
-    createJSON.properties.Slug.rich_text[0].text.content = memo.slug;
-    createJSON.properties.Slug.rich_text[0].plain_text = memo.slug;
-    createJSON.properties.URL.url = Flomo.linkURL + memo.slug;
-    createJSON.children[0].paragraph.rich_text[0].text.content = memo.content;
-    return createJSON;
-}
-
-// Notion 初始化 database
-async function initNotionDatabase(databaseId) {
-    const initDBJSON = await loadJSON(Notion.initdbJSON);
-    const requestBody = JSON.stringify(initDBJSON);
+async function fetchNotion(url, method, body) {
+    let result;
     const headers = await notionHeaders();
-    console.log("[background] -> initdb notion request:", headers, requestBody);
-
-    await fetch(`https://api.notion.com/v1/databases/${databaseId}`, {
-        method: "PATCH",
+    await fetch(url, {
+        method: method,
         headers: headers,
-        body: requestBody,
+        body: JSON.stringify(body),
     })
         .then((response) => response.json())
         .then((data) => {
-            console.log("[background] -> initdb notion success: ", data);
-            const code = data.object == "error" ? -1 : 0;
-            Utils.sendMessage("popup.flomo2notion.progress", { code: code, steps: "initdb.notion", message: "更新 Notion 数据失败" });
+            console.log("[background] -> fetch notion request:", url, method, body, data);
+            if (data.object == "error") {
+                result = { code: -1, message: data.message, error: data };
+            } else {
+                result = { code: 0, data: data };
+            }
         })
         .catch((error) => {
-            console.error("[background] -> initdb notion error: ", error);
-            Utils.sendMessage("popup.flomo2notion.progress", { code: -2, steps: "initdb.notion", message: "更新 Notion 数据失败" });
+            console.error("[background] -> fetch notion request:", url, method, body, error);
+            result = { code: -2, message: "请求异常，请检测网络链接", error: error };
         });
+    return new Promise((resolve, reject) => {
+        resolve(result);
+    });
 }
 
 // Notion 查询 database
-async function loadNotionDatabase(databaseId) {
+async function loadNotionDatabase(databaseId, callback) {
     let notionDatas = [];
     const headers = await notionHeaders();
     console.log("[background] -> query notion request:", notionHeaders);
@@ -288,11 +315,16 @@ async function loadNotionDatabase(databaseId) {
                     };
                 });
             const code = data.object == "error" ? -1 : 0;
-            Utils.sendMessage("popup.flomo2notion.progress", { code: code, steps: "load.notion", message: "获取 Notion 数据成功" });
+            const message = data.object == "error" ? "获取 Notion 数据失败：" + data.message : "获取 Notion 数据成功";
+            if (callback) {
+                callback({ code: code, steps: "load.notion", message: message });
+            }
         })
         .catch((error) => {
             console.error("[background] -> query notion error: ", error);
-            Utils.sendMessage("popup.flomo2notion.progress", { code: -2, steps: "load.notion", message: "获取 Notion 数据失败" });
+            if (callback) {
+                callback({ code: -2, steps: "load.notion", message: "获取 Notion 数据失败" }, notionDatas);
+            }
         });
     return notionDatas;
 }
@@ -319,33 +351,6 @@ function toNotionDBData(result) {
         inlinks: inlinks,
         outlinks: outlinks,
     };
-}
-
-// Notion 添加数据
-async function saveNotionPage(createJSON) {
-    const requestBody = JSON.stringify(createJSON);
-    const headers = await notionHeaders();
-    console.log("[background] -> save notion request:", headers, requestBody);
-
-    await fetch("https://api.notion.com/v1/pages", {
-        method: "POST",
-        headers: headers,
-        body: requestBody,
-    })
-        .then((response) => response.json())
-        .then((data) => {
-            //console.log("[background] -> save notion success: ", data);
-            const code = data.object == "error" ? -1 : 0;
-            const message = data.object == "error" ? "保存 Notion 数据失败: " + data.message : "保存 Notion 数据成功";
-            if (code != 0) {
-                console.error("[background] -> save notion error: ", requestBody, data);
-            }
-            Utils.sendMessage("popup.flomo2notion.progress", { code: code, steps: "save.notion", message: message });
-        })
-        .catch((error) => {
-            console.error("[background] -> save notion error: ", requestBody, error);
-            Utils.sendMessage("popup.flomo2notion.progress", { code: -2, steps: "save.notion", message: "保存 Notion 数据失败" });
-        });
 }
 
 // Notion 更新数据属性

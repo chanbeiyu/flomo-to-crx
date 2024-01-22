@@ -1,5 +1,14 @@
 {
     "properties": {
+        "Tags": {
+            "multi_select": {}
+        },
+        "MEMO": {
+            "relation": {
+                "single_property": {},
+                "database_id": ""
+            }
+        },
         "Slug": {
             "rich_text": {}
         },

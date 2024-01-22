@@ -147,12 +147,15 @@ $(function () {
     });
 
     $("#flomo-to-notion").on("click", function () {
+        $("#flomo-to-notion").attr("disabled", true);
         Utils.sendMessage("content.load.flomo", {}, function (result) {
             console.log("[popup] -> load flomo result: ", result);
+            showProgress(result);
             if (result.code == 0 && result.data && result.data.length > 0) {
                 Utils.sendMessage("background.flomoToNotion", { databaseId: notionDatabaseId, memos: result.data }, function (response) {
                     console.log("[popup] -> flomoToNotion callback: ", response);
-                    //showProgress(response.message);
+                    notify(response.message, response.code == 0);
+                    $("#flomo-to-notion").attr("disabled", false);
                 });
             }
         });

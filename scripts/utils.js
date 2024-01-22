@@ -69,3 +69,20 @@ export const storage = (data) => {
         console.log("[utils] -> set storage: ", data);
     });
 };
+
+//根据参数名获取参数值
+function getQueryStringByName(url, name) {
+    let params = new URL(url).searchParams;
+    return params.get(name); // is the string "Jonathan Smith".
+}
+
+export const getSlugs = (links) => {
+    let slugs = [];
+    links.forEach((link) => {
+        const value = getQueryStringByName(link, "memo_id");
+        if (value) {
+            slugs.push(value);
+        }
+    });
+    return slugs;
+}
