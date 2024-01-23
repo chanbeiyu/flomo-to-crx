@@ -37,6 +37,13 @@
             </div>
 
             <div id="settings" class="root hide">
+                <div class="info-container">
+                    <ul>
+                        <li>所有配置的信息仅存储在浏览器端，不会发往任何其它服务</li>
+                        <li>配置仅在调用 flomo 和 Notion 对应服务时使用</li>
+                        <li>卸载和重新安装扩展都会清除设置数据</li>
+                    </ul>
+                </div>
                 <div>
                     <div class="text-title">💠 flomo 浮墨设置 ---</div>
                     <div>
@@ -49,7 +56,7 @@
                     <div>
                         <input id="notion-api-key" name="notion-api-key" type="text" class="" placeholder="请输入 Notion Secrets" />
                         <input id="notion-database-id" name="notion-database-id" type="text" class="" placeholder="请输入 database id" />
-                        <a href="/popup/about.html" target="_blank" rel="">查看如何获取</a>
+                        <a href="/popup/help.html" target="_blank" rel="">查看如何获取</a>
                     </div>
                 </div>
             </div>
@@ -74,7 +81,7 @@
                     <ul>
                         <li>无需 flomo Pro 会员</li>
                         <li>需要处于 <a href="https://v.flomoapp.com/" title="打开站点">flomo 站点标签页</a> 并登录后使用</li>
-                        <li>当前会导入 flomo 中的全部数据，不会对 Notion Database 中的原有数据做任何更改</li>
+                        <li>不会对 Notion Database 中的原有数据做任何更改</li>
                         <li>导入可能需要比较长的时间，期间请勿关闭浏览器或 flomo 标签页。</li>
                     </ul>
                 </div>
@@ -94,7 +101,6 @@
                         <li>监听 flomo 网页版数据的添加和更新，同步至 Notion</li>
                     </ul>
                 </div>
-                <div class="container"></div>
             </div>
         </div>
 
